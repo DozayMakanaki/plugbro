@@ -9,9 +9,9 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        plugbroPurple: "#6A0DAD",
       },
+
     },
   },
   plugins: [],
