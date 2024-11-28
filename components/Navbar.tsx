@@ -1,4 +1,7 @@
+"use client";
+
 import React from "react";
+import Link from "next/link";
 
 interface NavbarProps {
   onSignInClick: () => void;
@@ -9,15 +12,15 @@ const Navbar: React.FC<NavbarProps> = ({ onSignInClick }) => {
     <nav className="flex items-center justify-between bg-white p-4 shadow-md sticky top-0 z-50">
       <div className="text-2xl font-bold text-plugbroPurple">Plugbro</div>
       <div className="flex space-x-4">
-        <a href="/" className="text-gray-700 hover:text-plugbroPurple">
+        <Link href="/" className="text-gray-700 hover:text-plugbroPurple">
           Explore Services
-        </a>
-        <a href="/" className="text-gray-700 hover:text-plugbroPurple">
+        </Link>
+        <Link href="/" className="text-gray-700 hover:text-plugbroPurple">
           Categories
-        </a>
-        <a href="/" className="text-gray-700 hover:text-plugbroPurple">
+        </Link>
+        <Link href="/" className="text-gray-700 hover:text-plugbroPurple">
           Become a Seller
-        </a>
+        </Link>
         <button
           onClick={onSignInClick}
           className="bg-plugbroPurple text-white px-4 py-2 rounded"
@@ -30,3 +33,4 @@ const Navbar: React.FC<NavbarProps> = ({ onSignInClick }) => {
 };
 
 export default Navbar;
+
