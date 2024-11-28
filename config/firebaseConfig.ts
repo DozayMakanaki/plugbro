@@ -1,12 +1,9 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
+import { getAnalytics, isSupported } from "firebase/analytics";
 import { getAuth, GoogleAuthProvider, RecaptchaVerifier } from "firebase/auth";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyBT5vc6VDg73nr-oLhLB3zIw3xV5WEUuF0",
   authDomain: "plugbro-38bde.firebaseapp.com",
@@ -19,8 +16,22 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+
+// Initialize Firebase Auth
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-export { auth, provider, RecaptchaVerifier };
+// Firebase Analytics: only initialize if supported and on the client
+let analytics: ReturnType<typeof getAnalytics> | undefined;
+if (typeof window !== "undefined") {
+  isSupported().then((supported) => {
+    if (supported) {
+      analytics = getAnalytics(app);
+      console.log("Firebase Analytics initialized");
+    } else {
+      console.warn("Firebase Analytics not supported in this environment");
+    }
+  });
+}
+
+export { app, auth, provider, RecaptchaVerifier, analytics };

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { auth, provider } from "@/config/firebaseConfig";
 import {
@@ -20,6 +20,13 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
+  
+  // Add this to avoid client-side code running on SSR
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true); // This will set isClient to true when the component is mounted
+  }, []);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +39,6 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
       console.log("User signed up:", auth.currentUser);
       router.push("/dashboard");
     } catch (error) {
-      // Cast error to Error type
       const err = error as Error;
       console.error("Error signing up:", err.message);
     }
@@ -45,7 +51,6 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
       console.log("User logged in:", auth.currentUser);
       router.push("/dashboard");
     } catch (error) {
-      // Cast error to Error type
       const err = error as Error;
       console.error("Error logging in:", err.message);
     }
@@ -57,13 +62,13 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
       console.log("User signed in with Google:", result.user);
       router.push("/dashboard");
     } catch (error) {
-      // Cast error to Error type
       const err = error as Error;
       console.error("Error signing in with Google:", err.message);
     }
   };
 
-  if (!isOpen) return null;
+  // Only render the component if we're on the client-side
+  if (!isClient) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
