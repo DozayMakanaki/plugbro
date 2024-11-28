@@ -31,7 +31,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
       await createUserWithEmailAndPassword(auth, email, password);
       console.log("User signed up:", auth.currentUser);
       router.push("/dashboard");
-    } catch (error: any) {
+    } catch (error: Error) {  // changed to Error type
       console.error("Error signing up:", error.message);
     }
   };
@@ -42,7 +42,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
       await signInWithEmailAndPassword(auth, email, password);
       console.log("User logged in:", auth.currentUser);
       router.push("/dashboard");
-    } catch (error: any) {
+    } catch (error: Error) {  // changed to Error type
       console.error("Error logging in:", error.message);
     }
   };
@@ -52,7 +52,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
       const result = await signInWithPopup(auth, provider);
       console.log("User signed in with Google:", result.user);
       router.push("/dashboard");
-    } catch (error: any) {
+    } catch (error: Error) {  // changed to Error type
       console.error("Error signing in with Google:", error.message);
     }
   };
