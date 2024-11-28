@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react"; // Removed `useEffect`
 import { useRouter } from "next/navigation";
 import { auth, provider } from "@/config/firebaseConfig";
 import {
@@ -23,6 +23,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   if (!isOpen) return null;
 
@@ -32,31 +33,42 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
       setError("Please enter a username.");
       return;
     }
+    setIsLoading(true);
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       router.push("/dashboard");
     } catch (error) {
       setError((error as Error).message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      router.push("/dashboard");
+    } catch (error) {
+      setError((error as Error).message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleAuth = async () => {
+    try {
+      await signInWithPopup(auth, provider); // Removed `result`
       router.push("/dashboard");
     } catch (error) {
       setError((error as Error).message);
     }
   };
 
-  const handleGoogleAuth = async () => {
-    try {
-      const result = await signInWithPopup(auth, provider);
-      router.push("/dashboard");
-    } catch (error) {
-      setError((error as Error).message);
-    }
+  const toggleSignup = () => {
+    setIsSignup(!isSignup);
+    setError(""); // Clear error
   };
 
   return (
@@ -68,6 +80,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
         <button
           className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
           onClick={onClose}
+          aria-label="Close modal"
         >
           ✕
         </button>
@@ -119,7 +132,12 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
           </div>
           <button
             type="submit"
-            className="w-full mt-4 bg-purple-600 text-white py-2 rounded"
+            disabled={isLoading}
+            className={`w-full mt-4 py-2 rounded ${
+              isLoading
+                ? "bg-purple-300 cursor-not-allowed"
+                : "bg-purple-600 text-white"
+            }`}
           >
             {isSignup ? "Sign Up" : "Log In"}
           </button>
@@ -127,6 +145,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
 
         <button
           onClick={handleGoogleAuth}
+          disabled={isLoading}
           className="w-full mt-4 bg-gray-100 border text-gray-700 py-2 rounded flex items-center justify-center"
         >
           <Image
@@ -140,7 +159,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose }) => {
         </button>
 
         <p
-          onClick={() => setIsSignup(!isSignup)}
+          onClick={toggleSignup}
           className="text-sm text-purple-600 mt-4 cursor-pointer"
         >
           {isSignup
